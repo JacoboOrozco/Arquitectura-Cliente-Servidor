@@ -7,14 +7,14 @@ import os
 
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://25.66.234.80:5555")
+socket.connect("tcp://127.0.0.1:5555")
 
 # download
-# m = [b'download', b'gat.jpg']
+#m = [b'download', b'gato.jpg']
 
 # upload
 fileBytes = ''
-m = [b'upload', b'gato.jpg', fileBytes]
+m = [b'upload', b'holaMundo.txt', fileBytes]
 
 
 # Estamos verificando el contenido de la peticion
@@ -36,7 +36,7 @@ if m[0] == b'upload':
         print('Error. The file requested to upload doesnt exist')
         fileBytes = b'error'
 
-m = [b'upload', b'gato.jpg', fileBytes]
+m = [b'upload', b'holaMundo.txt', fileBytes]
 
 socket.send_multipart(m)
 # mR = message received
@@ -46,7 +46,7 @@ mR = socket.recv()
 if m[0] == b'download':
     # save the file: open it in write bytes mode
     # m['fileName']
-    file = open('hola1', 'wb')
+    file = open('cat.jpg', 'wb')
     file.write(mR)
     file.close()
     if mR == b'Error el archivo deseado no se encuentra disponible para descarga':

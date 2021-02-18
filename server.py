@@ -5,7 +5,7 @@ import os
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.connect("tcp://25.66.234.80:5555")
+socket.bind("tcp://*:5555")
 
 while True:
 
