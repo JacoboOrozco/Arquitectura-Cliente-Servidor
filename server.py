@@ -39,7 +39,7 @@ while True:
 
         else:
             # recv stream and save it to the server: open it in write bytes mode
-            file = open('gatoJoe.jpg', 'wb')
+            file = open('gato3.jpg', 'wb')
             # m[1].decode("utf-8")
 
             file.write(m[2])
