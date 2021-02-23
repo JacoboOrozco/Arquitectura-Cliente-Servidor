@@ -1,58 +1,65 @@
 import zmq
 import json
-# Lo importamos para obtener el tamano del archivo que vamos a subir
-# de esta forma no tenemos una restriccion por el tamano del archivo
 import os
 
 
-context = zmq.Context()
-socket = context.socket(zmq.REQ)
-socket.connect("tcp://25.66.234.80:5555")
-
-# download
-# m = [b'download', b'gat.jpg']
-
-# upload
-fileBytes = ''
-m = [b'upload', b'gato.jpg', fileBytes]
+def Main():
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://127.0.0.1:5555")
+    Request(socket)
 
 
-# Estamos verificando el contenido de la peticion
-if m[0] == b'upload':
+def Request(socket):
+    print('Please input your desired selection:')
+    peticion = int(input('1.Upload   2.Download = '))
+    if peticion == 1:
+        Subir(socket)
+    elif peticion == 2:
+        Descargar(socket)
+    else:
+        print('Incorrect input, please enter a valid number.')
 
-    if os.path.isfile(m[1].decode('utf-8')):
 
-        file_stats = os.stat(m[1])
-
+def Subir(socket):
+    # upload
+    fileBytes = ''
+    fileName = b'holaMundo.txt'
+    if os.path.isfile(fileName.decode('utf-8')):
+        file_stats = os.stat(fileName.decode('utf-8'))
         print(f'File Size in Bytes is {file_stats.st_size}')
-
         fileSize = file_stats.st_size
-
         # Guardamos en una variable el archivo ubicado en la posicion 1 de m en modo read binary
-        file = open(m[1], 'rb')
+        file = open(fileName.decode('utf-8'), 'rb')
         fileBytes = file.read(fileSize)
         # print(fileBytes)
     else:
         print('Error. The file requested to upload doesnt exist')
         fileBytes = b'error'
+    m = [b'upload', fileName, fileBytes]
+    socket.send_multipart(m)
+    # mR = message received
+    mR = socket.recv()
+    print('{}'.format(mR.decode('utf-8')))
 
-m = [b'upload', b'gato.jpg', fileBytes]
 
-socket.send_multipart(m)
-# mR = message received
-mR = socket.recv()
-# m= m.decode('utf-8')
-
-if m[0] == b'download':
-    # save the file: open it in write bytes mode
-    # m['fileName']
-    file = open('hola1', 'wb')
-    file.write(mR)
-    file.close()
-    if mR == b'Error el archivo deseado no se encuentra disponible para descarga':
+def Descargar(socket):
+    # download
+    fileName = b'gato.jpg'
+    m = [b'download', fileName]
+    socket.send_multipart(m)
+    # mR = message received
+    mR = socket.recv()
+    if mR == b'Error. File requested is not available for download':
         print(mR)
     else:
-        print('file {} has been received successfully'.format(m[1]))
-else:
-    # Print the message: Error or success
-    print(mR)
+        # save the file: open it in write bytes mode
+        file = open(fileName.decode('utf-8'), 'wb')
+        file.write(mR)
+        file.close()
+        print('file {} has been received successfully'.format(m[1].decode('utf-8')))
+
+
+if __name__ == "__main__":
+    while True:
+        Main()
