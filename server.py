@@ -5,7 +5,7 @@ import os
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.connect("tcp://25.66.234.80:5555")
+socket.bind("tcp://*:5555")
 
 while True:
 
@@ -39,8 +39,7 @@ while True:
 
         else:
             # recv stream and save it to the server: open it in write bytes mode
-            file = open('gatoJoe.jpg', 'wb')
-            # m[1].decode("utf-8")
+            file = open(m[1].decode("utf-8"), 'wb')
 
             file.write(m[2])
             file.close()
